@@ -3,7 +3,7 @@ import Icon from "@/components/ui/icon";
 
 const IMAGES = {
   hero: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/2e0ede3d-bdd1-498d-ade2-e5e64e928852.jpg",
-  director: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/da5bff2d-f29c-4333-bf68-0f2a4c6e1d0d.jpg",
+  director: "https://upload.wikimedia.org/wikipedia/commons/a/ad/Alla_Surikova_2020_%28cropped%29.jpg",
   saloon: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/e3409e77-9bd9-435d-82d7-165e6479cd39.jpg",
   projector: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/822a7722-fa03-4120-996c-df97fe58392b.jpg",
 };
