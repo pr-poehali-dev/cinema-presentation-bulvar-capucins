@@ -9,12 +9,12 @@ const IMAGES = {
 };
 
 const ACTORS = [
-  { name: "Андрей Миронов", role: "Мистер Фёст", note: "Благородный пропагандист кино" },
-  { name: "Александра Яковлева", role: "Диана", note: "Дочь хозяина салуна" },
-  { name: "Николай Караченцов", role: "Билли Кинг", note: "Бандит и злодей" },
-  { name: "Михаил Боярский", role: "Чёрный Джек", note: "Ковбой и авантюрист" },
-  { name: "Олег Табаков", role: "Мак-Кью", note: "Делец и циник" },
-  { name: "Игорь Кваша", role: "Пастор", note: "Служитель церкви" },
+  { name: "Андрей Миронов", role: "Мистер Фёст", note: "Благородный пропагандист кино", photo: "https://upload.wikimedia.org/wikipedia/commons/f/f0/Russia-2001-stamp-Andrei_Mironov.jpg" },
+  { name: "Александра Яковлева", role: "Диана", note: "Дочь хозяина салуна", photo: "https://upload.wikimedia.org/wikipedia/commons/7/78/Aleksandra_Yakovleva%2C_May_2021_%28cropped%29.jpg" },
+  { name: "Николай Караченцов", role: "Билли Кинг", note: "Бандит и злодей", photo: "https://upload.wikimedia.org/wikipedia/commons/4/40/NKarachentsov.jpg" },
+  { name: "Михаил Боярский", role: "Чёрный Джек", note: "Ковбой и авантюрист", photo: "https://upload.wikimedia.org/wikipedia/commons/d/df/%D0%9C%D0%B8%D1%85%D0%B0%D0%B8%D0%BB_%D0%91%D0%BE%D1%8F%D1%80%D1%81%D0%BA%D0%B8%D0%B9._%D0%A4%D0%BE%D1%82%D0%BE_%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81%D0%B8%D0%B8_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%B5%D0%BD%D0%BA%D0%BE.jpg" },
+  { name: "Олег Табаков", role: "Мак-Кью", note: "Делец и циник", photo: "https://upload.wikimedia.org/wikipedia/commons/9/92/OlegTabakov.jpg" },
+  { name: "Игорь Кваша", role: "Пастор", note: "Служитель церкви", photo: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Igor_Kvasha-10-10_by_Alexey_Nikishin.jpg" },
 ];
 
 const SONGS = [
@@ -228,7 +228,7 @@ export default function Index() {
             </div>
           </RevealSection>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 1, background: `${G}18` }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 2, background: `${G}18` }}>
             {ACTORS.map((actor, i) => (
               <RevealSection key={i} delay={i * 90}>
                 <ActorCard actor={actor} index={i} G={G} BG="#110D09" CREAM={CREAM} ASH={ASH} DARK_ASH={DARK_ASH} />
@@ -365,7 +365,7 @@ export default function Index() {
 }
 
 function ActorCard({ actor, index, G, BG, CREAM, ASH, DARK_ASH }: {
-  actor: { name: string; role: string; note: string };
+  actor: { name: string; role: string; note: string; photo: string };
   index: number;
   G: string; BG: string; CREAM: string; ASH: string; DARK_ASH: string;
 }) {
@@ -374,14 +374,30 @@ function ActorCard({ actor, index, G, BG, CREAM, ASH, DARK_ASH }: {
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{ position: "relative", overflow: "hidden", padding: "2rem", background: hovered ? "#1A1208" : BG, transition: "background 0.4s ease", cursor: "pointer" }}
+      style={{ position: "relative", overflow: "hidden", aspectRatio: "3/4", cursor: "pointer" }}
     >
-      <div style={{ fontFamily: "Oswald, sans-serif", fontSize: "3.5rem", fontWeight: 300, color: `${G}14`, lineHeight: 1, marginBottom: "0.5rem", userSelect: "none" }}>
-        {String(index + 1).padStart(2, "0")}
+      {/* Фото актёра */}
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundImage: `url(${actor.photo})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center top",
+        filter: "grayscale(50%) sepia(20%) brightness(0.75)",
+        transform: hovered ? "scale(1.06)" : "scale(1)",
+        transition: "transform 0.7s ease, filter 0.5s ease",
+      }} />
+      {/* Градиент */}
+      <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to top, ${BG}F0 0%, ${BG}60 50%, transparent 100%)` }} />
+      {/* Hover золотой оверлей */}
+      <div style={{ position: "absolute", inset: 0, background: `${G}00`, opacity: hovered ? 1 : 0, transition: "opacity 0.4s", boxShadow: `inset 0 0 0 1px ${G}60` }} />
+
+      {/* Текст */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "1.5rem" }}>
+        <h3 style={{ fontFamily: "Oswald, sans-serif", fontSize: "1.2rem", fontWeight: 400, letterSpacing: "0.15em", color: CREAM, textTransform: "uppercase", lineHeight: 1.2 }}>{actor.name}</h3>
+        <p style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontSize: "1rem", color: G, marginTop: "0.4rem" }}>{actor.role}</p>
+        <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.3em", color: DARK_ASH, textTransform: "uppercase", marginTop: "0.5rem" }}>{actor.note}</p>
       </div>
-      <h3 style={{ fontFamily: "Oswald, sans-serif", fontSize: "1.2rem", fontWeight: 400, letterSpacing: "0.15em", color: CREAM, textTransform: "uppercase", lineHeight: 1.2 }}>{actor.name}</h3>
-      <p style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontSize: "1rem", color: G, marginTop: "0.4rem" }}>{actor.role}</p>
-      <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.3em", color: DARK_ASH, textTransform: "uppercase", marginTop: "0.6rem" }}>{actor.note}</p>
+      {/* Золотая линия снизу при hover */}
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: G, transform: hovered ? "scaleX(1)" : "scaleX(0)", transformOrigin: "left", transition: "transform 0.5s ease" }} />
     </div>
   );
