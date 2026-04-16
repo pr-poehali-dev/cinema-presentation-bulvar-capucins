@@ -9,12 +9,12 @@ const IMAGES = {
 };
 
 const ACTORS = [
-  { name: "Андрей Миронов", role: "Мистер Фёст", note: "Благородный пропагандист кино", photo: "https://upload.wikimedia.org/wikipedia/commons/f/f0/Russia-2001-stamp-Andrei_Mironov.jpg" },
-  { name: "Александра Яковлева", role: "Диана", note: "Дочь хозяина салуна", photo: "https://upload.wikimedia.org/wikipedia/commons/7/78/Aleksandra_Yakovleva%2C_May_2021_%28cropped%29.jpg" },
-  { name: "Николай Караченцов", role: "Билли Кинг", note: "Бандит и злодей", photo: "https://upload.wikimedia.org/wikipedia/commons/4/40/NKarachentsov.jpg" },
-  { name: "Михаил Боярский", role: "Чёрный Джек", note: "Ковбой и авантюрист", photo: "https://upload.wikimedia.org/wikipedia/commons/d/df/%D0%9C%D0%B8%D1%85%D0%B0%D0%B8%D0%BB_%D0%91%D0%BE%D1%8F%D1%80%D1%81%D0%BA%D0%B8%D0%B9._%D0%A4%D0%BE%D1%82%D0%BE_%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81%D0%B8%D0%B8_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%B5%D0%BD%D0%BA%D0%BE.jpg" },
-  { name: "Олег Табаков", role: "Мак-Кью", note: "Делец и циник", photo: "https://upload.wikimedia.org/wikipedia/commons/9/92/OlegTabakov.jpg" },
-  { name: "Игорь Кваша", role: "Пастор", note: "Служитель церкви", photo: "https://upload.wikimedia.org/wikipedia/commons/9/9b/Igor_Kvasha-10-10_by_Alexey_Nikishin.jpg" },
+  { name: "Андрей Миронов", role: "Мистер Фёст", note: "Благородный пропагандист кино", photo: "https://upload.wikimedia.org/wikipedia/commons/1/14/%D0%90%D0%BD%D0%B4%D1%80%D0%B5%D0%B9_%D0%9C%D0%B8%D1%80%D0%BE%D0%BD%D0%BE%D0%B2_%28cropped%29.jpg", year: "до 1987" },
+  { name: "Александра Яковлева", role: "Диана", note: "Дочь хозяина салуна", photo: "https://upload.wikimedia.org/wikipedia/commons/7/78/Aleksandra_Yakovleva%2C_May_2021_%28cropped%29.jpg", year: "2021" },
+  { name: "Николай Караченцов", role: "Билли Кинг", note: "Бандит и злодей", photo: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Nikolai_Karachentsov_in_Chisinau_-_5_%281972%29._%289313087830%29.jpg", year: "1972" },
+  { name: "Михаил Боярский", role: "Чёрный Джек", note: "Ковбой и авантюрист", photo: "https://upload.wikimedia.org/wikipedia/commons/d/df/%D0%9C%D0%B8%D1%85%D0%B0%D0%B8%D0%BB_%D0%91%D0%BE%D1%8F%D1%80%D1%81%D0%BA%D0%B8%D0%B9._%D0%A4%D0%BE%D1%82%D0%BE_%D0%90%D0%BD%D0%B0%D1%81%D1%82%D0%B0%D1%81%D0%B8%D0%B8_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%B5%D0%BD%D0%BA%D0%BE.jpg", year: "" },
+  { name: "Олег Табаков", role: "Мак-Кью", note: "Делец и циник", photo: "https://upload.wikimedia.org/wikipedia/commons/e/e3/%D0%9E%D0%BB%D0%B5%D0%B3_%D0%A2%D0%B0%D0%B1%D0%B0%D0%BA%D0%BE%D0%B2_%281980%29.jpg", year: "1980" },
+  { name: "Игорь Кваша", role: "Пастор", note: "Служитель церкви", photo: "https://upload.wikimedia.org/wikipedia/commons/4/44/%D0%98%D0%B3%D0%BE%D1%80%D1%8C_%D0%9A%D0%B2%D0%B0%D1%88%D0%B0_%D0%B8_%D0%A2%D0%B0%D1%82%D1%8C%D1%8F%D0%BD%D0%B0_%D0%94%D0%BE%D1%80%D0%BE%D0%BD%D0%B8%D0%BD%D0%B0_%28%D0%BD%D0%BE%D1%8F%D0%B1%D1%80%D1%8C_1959%29.jpg", year: "1959" },
 ];
 
 const SONGS = [
@@ -365,7 +365,7 @@ export default function Index() {
 }
 
 function ActorCard({ actor, index, G, BG, CREAM, ASH, DARK_ASH }: {
-  actor: { name: string; role: string; note: string; photo: string };
+  actor: { name: string; role: string; note: string; photo: string; year: string };
   index: number;
   G: string; BG: string; CREAM: string; ASH: string; DARK_ASH: string;
 }) {
@@ -382,14 +382,21 @@ function ActorCard({ actor, index, G, BG, CREAM, ASH, DARK_ASH }: {
         backgroundImage: `url(${actor.photo})`,
         backgroundSize: "cover",
         backgroundPosition: "center top",
-        filter: "grayscale(50%) sepia(20%) brightness(0.75)",
+        filter: "grayscale(55%) sepia(25%) brightness(0.72)",
         transform: hovered ? "scale(1.06)" : "scale(1)",
         transition: "transform 0.7s ease, filter 0.5s ease",
       }} />
       {/* Градиент */}
-      <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to top, ${BG}F0 0%, ${BG}60 50%, transparent 100%)` }} />
+      <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to top, ${BG}F5 0%, ${BG}70 45%, transparent 100%)` }} />
       {/* Hover золотой оверлей */}
-      <div style={{ position: "absolute", inset: 0, background: `${G}00`, opacity: hovered ? 1 : 0, transition: "opacity 0.4s", boxShadow: `inset 0 0 0 1px ${G}60` }} />
+      <div style={{ position: "absolute", inset: 0, opacity: hovered ? 1 : 0, transition: "opacity 0.4s", boxShadow: `inset 0 0 0 1px ${G}60` }} />
+
+      {/* Год фото — сверху справа */}
+      {actor.year && (
+        <div style={{ position: "absolute", top: "0.75rem", right: "0.75rem", fontFamily: "Oswald, sans-serif", fontSize: 9, letterSpacing: "0.4em", color: `${G}CC`, textTransform: "uppercase", background: `${BG}CC`, padding: "0.2rem 0.5rem" }}>
+          {actor.year}
+        </div>
+      )}
 
       {/* Текст */}
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "1.5rem" }}>
