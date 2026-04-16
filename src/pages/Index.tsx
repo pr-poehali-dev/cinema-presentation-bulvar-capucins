@@ -2,40 +2,72 @@ import { useEffect, useRef, useState } from "react";
 import Icon from "@/components/ui/icon";
 
 const IMAGES = {
-  hero: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/e4d34ba8-5d66-4e45-ab18-19e36d775aa2.jpg",
-  director: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/7a5f2d71-f257-43c0-bc61-cdcc901df0a0.jpg",
-  scene: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/abbbfbae-112a-49a0-a527-821aff7cce1b.jpg",
-  cast: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/c772fb22-ee04-4ad7-b1ea-d62cec9c2e6a.jpg",
+  hero: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/2e0ede3d-bdd1-498d-ade2-e5e64e928852.jpg",
+  director: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/da5bff2d-f29c-4333-bf68-0f2a4c6e1d0d.jpg",
+  saloon: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/e3409e77-9bd9-435d-82d7-165e6479cd39.jpg",
+  projector: "https://cdn.poehali.dev/projects/2bf55140-c107-4927-8a64-d4db81a2870b/files/822a7722-fa03-4120-996c-df97fe58392b.jpg",
 };
 
 const ACTORS = [
-  { name: "Алексей Серов", role: "Следователь Кравцов", award: "Лауреат премии «Ника»" },
-  { name: "Марина Волкова", role: "Елена Данилова", award: "Номинант БАФТА" },
-  { name: "Виктор Чернов", role: "Профессор Остров", award: "Заслуженный артист РФ" },
-  { name: "Ирина Беляева", role: "Анна Крест", award: "Лауреат «Золотого орла»" },
+  { name: "Андрей Миронов", role: "Мистер Фёст", note: "Благородный пропагандист кино" },
+  { name: "Александра Яковлева", role: "Диана", note: "Дочь хозяина салуна" },
+  { name: "Николай Караченцов", role: "Билли Кинг", note: "Бандит и злодей" },
+  { name: "Михаил Боярский", role: "Чёрный Джек", note: "Ковбой и авантюрист" },
+  { name: "Олег Табаков", role: "Мак-Кью", note: "Делец и циник" },
+  { name: "Игорь Кваша", role: "Гарри", note: "Владелец салуна" },
 ];
 
-const SCENES = [
-  { title: "Допрос", desc: "Сцена психологического противостояния в подвале старого особняка" },
-  { title: "Бегство", desc: "Ночная погоня по заснеженным улицам портового города" },
-  { title: "Откровение", desc: "Финальное столкновение с правдой в заброшенном театре" },
+const SONGS = [
+  {
+    title: "Синема",
+    subtitle: "Главная тема фильма",
+    lines: [
+      "Синема, синема, синема —",
+      "от тебя я без ума!",
+      "Синема, синема —",
+      "это чудо всех времён,",
+      "лучший из миров.",
+    ],
+    icon: "Film",
+  },
+  {
+    title: "Волшебный луч",
+    subtitle: "Ода кинематографу",
+    lines: [
+      "Волшебный луч, волшебный луч",
+      "пронзает темноту...",
+      "И тает в нём, как в свете туч,",
+      "мечта и красота.",
+    ],
+    icon: "Sparkles",
+  },
+  {
+    title: "Была не была",
+    subtitle: "Романс Дианы",
+    lines: [
+      "Была не была —",
+      "гулять, так гулять!",
+      "Была не была —",
+      "любить, так любить!",
+      "Эх, была не была...",
+    ],
+    icon: "Music",
+  },
 ];
 
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
-
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold: 0.15 }
+      { threshold: 0.12 }
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
-
   return { ref, visible };
 }
 
@@ -47,8 +79,8 @@ function RevealSection({ children, className = "", delay = 0 }: { children: Reac
       className={className}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(50px)",
-        transition: `opacity 1s ease ${delay}ms, transform 1s ease ${delay}ms`,
+        transform: visible ? "translateY(0)" : "translateY(48px)",
+        transition: `opacity 0.9s ease ${delay}ms, transform 0.9s ease ${delay}ms`,
       }}
     >
       {children}
@@ -56,224 +88,178 @@ function RevealSection({ children, className = "", delay = 0 }: { children: Reac
   );
 }
 
-function ParallaxImage({ src, className = "" }: { src: string; className?: string }) {
+function ParallaxBg({ src, opacity = 1 }: { src: string; opacity?: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLDivElement>(null);
-
+  const inner = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
-    const img = imgRef.current;
+    const img = inner.current;
     if (!el || !img) return;
-
-    const handleScroll = () => {
+    const onScroll = () => {
       const rect = el.getBoundingClientRect();
-      const viewH = window.innerHeight;
-      const progress = (viewH - rect.top) / (viewH + rect.height);
-      const offset = (progress - 0.5) * 80;
-      img.style.transform = `translateY(${offset}px) scale(1.15)`;
+      const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+      img.style.transform = `translateY(${(progress - 0.5) * 70}px) scale(1.14)`;
     };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
   return (
-    <div ref={ref} className={`overflow-hidden ${className}`}>
+    <div ref={ref} className="absolute inset-0 overflow-hidden">
       <div
-        ref={imgRef}
-        className="w-full h-full bg-cover bg-center transition-transform duration-100"
-        style={{ backgroundImage: `url(${src})` }}
+        ref={inner}
+        className="w-full h-full bg-cover bg-center"
+        style={{ backgroundImage: `url(${src})`, opacity, transition: "transform 0.1s linear" }}
       />
     </div>
   );
 }
 
 export default function Index() {
-  const [heroLoaded, setHeroLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    setTimeout(() => setHeroLoaded(true), 100);
+    setTimeout(() => setLoaded(true), 80);
     const onScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const G = "#C9A84C";
+  const BG = "#0D0906";
+  const CREAM = "#F0E0C0";
+  const ASH = "#9A8A78";
+  const DARK_ASH = "#6A5A4A";
+
   return (
-    <div className="bg-film-dark text-film-cream min-h-screen font-display overflow-x-hidden">
-      {/* Grain overlay */}
-      <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.04]" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        backgroundRepeat: 'repeat',
-        backgroundSize: '128px 128px',
-      }} />
+    <div style={{ background: BG, color: CREAM, minHeight: "100vh", overflowX: "hidden", fontFamily: "Cormorant Garamond, serif" }}>
+      {/* Film grain */}
+      <div className="fixed inset-0 pointer-events-none z-50" style={{ opacity: 0.035, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: "128px" }} />
 
-      {/* ═══════════ HERO ═══════════ */}
-      <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
-        {/* Letterbox bars */}
-        <div className="absolute top-0 left-0 right-0 h-[10vh] bg-film-dark z-20" />
-        <div className="absolute bottom-0 left-0 right-0 h-[10vh] bg-film-dark z-20" />
+      {/* ══ HERO ══ */}
+      <section className="relative flex items-center justify-center overflow-hidden" style={{ height: "100vh" }}>
+        <div className="absolute top-0 left-0 right-0 z-20" style={{ height: "9vh", background: BG }} />
+        <div className="absolute bottom-0 left-0 right-0 z-20" style={{ height: "9vh", background: BG }} />
 
-        {/* BG with zoom */}
         <div className="absolute inset-0 z-0">
-          <div
-            className="w-full h-full bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${IMAGES.hero})`,
-              transform: `scale(${1 + scrollY * 0.0003})`,
-              transition: "transform 0.1s linear",
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-film-dark/70 via-film-dark/40 to-film-dark/90" />
+          <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${IMAGES.hero})`, transform: `scale(${1 + scrollY * 0.00025})`, filter: "sepia(50%) brightness(0.5)", transition: "transform 0.1s linear" }} />
+          <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, ${BG}88 0%, ${BG}22 40%, ${BG}E0 100%)` }} />
         </div>
 
-        {/* Gold lines */}
-        <div
-          className="absolute top-[10vh] left-0 right-0 h-[1px] z-30"
-          style={{
-            background: "linear-gradient(90deg, transparent, #C9A84C, transparent)",
-            opacity: heroLoaded ? 1 : 0,
-            transition: "opacity 2s ease 0.5s",
-          }}
-        />
-        <div
-          className="absolute bottom-[10vh] left-0 right-0 h-[1px] z-30"
-          style={{
-            background: "linear-gradient(90deg, transparent, #C9A84C, transparent)",
-            opacity: heroLoaded ? 1 : 0,
-            transition: "opacity 2s ease 0.5s",
-          }}
-        />
+        <div className="absolute z-30 left-0 right-0" style={{ top: "9vh", height: 1, background: `linear-gradient(90deg, transparent, ${G}, transparent)`, opacity: loaded ? 1 : 0, transition: "opacity 2s ease 0.6s" }} />
+        <div className="absolute z-30 left-0 right-0" style={{ bottom: "9vh", height: 1, background: `linear-gradient(90deg, transparent, ${G}, transparent)`, opacity: loaded ? 1 : 0, transition: "opacity 2s ease 0.6s" }} />
 
-        {/* Content */}
-        <div className="relative z-10 text-center px-4">
-          <div
-            className="font-heading text-xs tracking-[0.5em] text-film-gold mb-6 uppercase"
-            style={{ opacity: heroLoaded ? 1 : 0, transition: "opacity 1.5s ease 0.3s" }}
-          >
-            Премьера сезона · 2024
-          </div>
-          <h1
-            className="font-heading text-[clamp(3rem,10vw,8rem)] font-light tracking-[0.15em] leading-none text-film-cream uppercase"
-            style={{
-              opacity: heroLoaded ? 1 : 0,
-              transform: heroLoaded ? "translateY(0)" : "translateY(30px)",
-              transition: "opacity 1.5s ease 0.6s, transform 1.5s ease 0.6s",
-              textShadow: "0 0 80px rgba(201,168,76,0.3)",
-            }}
-          >
-            ТЕНИ
-            <br />
-            <span className="text-film-gold" style={{ animation: "title-flicker 4s ease-in-out infinite" }}>ПРОШЛОГО</span>
+        <div className="relative z-10 text-center px-4" style={{ maxWidth: 900, margin: "0 auto" }}>
+          <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 11, letterSpacing: "0.55em", color: G, textTransform: "uppercase", marginBottom: "1.2rem", opacity: loaded ? 1 : 0, transition: "opacity 1.2s ease 0.2s" }}>
+            Алла Сурикова · 1987 · Мосфильм
+          </p>
+          <h1 style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(2.2rem, 7vw, 6.5rem)", fontWeight: 300, letterSpacing: "0.12em", lineHeight: 1.05, color: CREAM, textShadow: `0 0 60px ${G}55`, opacity: loaded ? 1 : 0, transform: loaded ? "translateY(0)" : "translateY(28px)", transition: "opacity 1.4s ease 0.5s, transform 1.4s ease 0.5s" }}>
+            ЧЕЛОВЕК<br />
+            <span style={{ color: G }}>С БУЛЬВАРА</span><br />
+            КАПУЦИНОВ
           </h1>
-          <div
-            className="font-display italic text-[clamp(0.9rem,2vw,1.3rem)] text-film-ash mt-6 tracking-widest"
-            style={{ opacity: heroLoaded ? 1 : 0, transition: "opacity 1.5s ease 1.2s" }}
-          >
-            «Правда не умирает. Она только ждёт.»
-          </div>
-
-          <div
-            className="mt-16 flex flex-col items-center gap-2"
-            style={{ opacity: heroLoaded ? 1 : 0, transition: "opacity 1s ease 2s" }}
-          >
-            <span className="font-heading text-[10px] tracking-[0.4em] text-film-ash uppercase">Прокрутить</span>
-            <div className="w-[1px] h-12 bg-gradient-to-b from-film-gold to-transparent animate-pulse" />
+          <p style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontSize: "clamp(1rem, 2vw, 1.35rem)", color: ASH, marginTop: "1.8rem", letterSpacing: "0.08em", opacity: loaded ? 1 : 0, transition: "opacity 1.2s ease 1.2s" }}>
+            «Кино делает людей лучше — или хуже. Это зависит от людей.»
+          </p>
+          <div style={{ opacity: loaded ? 1 : 0, transition: "opacity 1s ease 2s", marginTop: "3.5rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ fontFamily: "Oswald, sans-serif", fontSize: 9, letterSpacing: "0.45em", color: DARK_ASH, textTransform: "uppercase" }}>Прокрутить</span>
+            <div className="animate-pulse" style={{ width: 1, height: 48, background: `linear-gradient(to bottom, ${G}, transparent)` }} />
           </div>
         </div>
       </section>
 
-      {/* ═══════════ РЕЖИССЁР ═══════════ */}
-      <section className="relative py-32 overflow-hidden">
-        <div className="container max-w-6xl mx-auto px-6">
+      {/* ══ РЕЖИССЁР ══ */}
+      <section className="relative py-28 overflow-hidden">
+        <div className="container" style={{ maxWidth: 1152, margin: "0 auto", padding: "0 1.5rem" }}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <RevealSection delay={0}>
+            <RevealSection>
               <div className="relative">
-                <div className="absolute -top-4 -left-4 w-full h-full border border-film-gold/20" />
-                <div className="aspect-[3/4] overflow-hidden">
-                  <ParallaxImage src={IMAGES.director} className="w-full h-full" />
+                <div className="absolute" style={{ top: -12, left: -12, right: 12, bottom: 12, border: `1px solid ${G}28` }} />
+                <div className="relative overflow-hidden" style={{ aspectRatio: "3/4" }}>
+                  <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${IMAGES.director})`, filter: "sepia(30%) contrast(1.1)" }} />
+                  <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${BG}BB 0%, transparent 60%)` }} />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-film-dark/60 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6">
-                  <div className="w-8 h-[1px] bg-film-gold inline-block mr-3 mb-1" />
-                  <span className="font-heading text-[10px] tracking-[0.4em] text-film-gold uppercase">Режиссёр</span>
+                <div className="absolute bottom-5 left-5 flex items-center gap-2">
+                  <div style={{ width: 28, height: 1, background: G }} />
+                  <span style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.45em", color: G, textTransform: "uppercase" }}>Режиссёр</span>
                 </div>
               </div>
             </RevealSection>
 
-            <RevealSection delay={200}>
-              <div className="space-y-8">
-                <div>
-                  <div className="font-heading text-[10px] tracking-[0.5em] text-film-gold uppercase mb-4">Постановщик фильма</div>
-                  <h2 className="font-heading text-[clamp(2.5rem,5vw,4rem)] font-light tracking-wider text-film-cream leading-none">
-                    АНДРЕЙ<br />
-                    <span className="text-film-gold">МИРОНОВ</span>
-                  </h2>
-                </div>
-
-                <div className="w-16 h-[1px] bg-film-gold/40" />
-
-                <p className="font-display text-film-ash text-lg leading-relaxed italic">
-                  Лауреат Каннского фестиваля, чьи работы отличаются беспощадной честностью
-                  к человеческой природе. Новый фильм — это вершина двадцатилетней карьеры.
+            <RevealSection delay={180}>
+              <div>
+                <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.5em", color: G, textTransform: "uppercase", marginBottom: "1rem" }}>Постановщик</p>
+                <h2 style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(2.2rem,5vw,3.8rem)", fontWeight: 300, letterSpacing: "0.12em", color: CREAM, lineHeight: 1.1, marginBottom: "1.5rem" }}>
+                  АЛЛА<br /><span style={{ color: G }}>СУРИКОВА</span>
+                </h2>
+                <div style={{ width: 56, height: 1, background: `${G}66`, marginBottom: "1.5rem" }} />
+                <p style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.15rem", lineHeight: 1.8, color: ASH, fontStyle: "italic", marginBottom: "1.8rem" }}>
+                  Советский и российский кинорежиссёр, мастер лирической комедии. «Человек с бульвара Капуцинов» (1987) стал её самой кассовой и любимой зрителями работой — музыкальный вестерн с блестящим актёрским ансамблем.
                 </p>
-
-                <div className="space-y-3">
-                  {["Каннский фестиваль — Гран-при жюри", "Берлинский кинофестиваль — Серебряный медведь", "Премия «Золотой орёл» — Лучший режиссёр"].map((award, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-film-gold flex-shrink-0" />
-                      <span className="font-heading text-[11px] tracking-[0.3em] text-film-ash uppercase">{award}</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                  {[
+                    "Заслуженный деятель искусств РСФСР",
+                    "Приз зрительских симпатий — МКФ в Москве",
+                    "Автор более 20 полнометражных фильмов",
+                  ].map((a, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                      <div style={{ width: 6, height: 6, borderRadius: "50%", background: G, flexShrink: 0 }} />
+                      <span style={{ fontFamily: "Oswald, sans-serif", fontSize: 11, letterSpacing: "0.28em", color: ASH, textTransform: "uppercase" }}>{a}</span>
                     </div>
                   ))}
                 </div>
-
-                <div className="pt-4">
-                  <div className="font-display italic text-film-cream/60 text-sm border-l-2 border-film-gold pl-4">
-                    «Каждый кадр — это исповедь. Я не снимаю фильмы, я извлекаю правду.»
-                  </div>
-                </div>
               </div>
             </RevealSection>
           </div>
         </div>
       </section>
 
-      {/* ═══════════ СЮЖЕТ ═══════════ */}
-      <section className="relative py-32 overflow-hidden">
-        <ParallaxImage src={IMAGES.scene} className="absolute inset-0 w-full h-full opacity-30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-film-dark via-film-dark/80 to-film-dark" />
-
-        <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "linear-gradient(90deg, transparent 10%, #C9A84C40 50%, transparent 90%)" }} />
-        <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: "linear-gradient(90deg, transparent 10%, #C9A84C40 50%, transparent 90%)" }} />
-
-        <div className="relative z-10 container max-w-6xl mx-auto px-6">
+      {/* ══ АКТЁРЫ ══ */}
+      <section className="relative py-28" style={{ background: "#110D09" }}>
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${G}88, transparent)` }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${G}88, transparent)` }} />
+        <div className="container" style={{ maxWidth: 1152, margin: "0 auto", padding: "0 1.5rem" }}>
           <RevealSection>
-            <div className="max-w-3xl">
-              <div className="font-heading text-[10px] tracking-[0.5em] text-film-gold uppercase mb-6">Сюжет и интрига</div>
-              <h2 className="font-heading text-[clamp(2rem,4vw,3.5rem)] font-light tracking-wider text-film-cream leading-tight mb-10">
-                КОГДА ПРОШЛОЕ<br />
-                <span className="text-film-gold">ВОЗВРАЩАЕТСЯ</span>
-              </h2>
+            <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+              <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.5em", color: G, textTransform: "uppercase", marginBottom: "1rem" }}>В главных ролях</p>
+              <h2 style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(1.8rem,4vw,3rem)", fontWeight: 300, letterSpacing: "0.2em", color: CREAM }}>АКТЁРСКИЙ СОСТАВ</h2>
+              <div style={{ width: 80, height: 1, background: `${G}66`, margin: "1.2rem auto 0" }} />
+            </div>
+          </RevealSection>
 
-              <div className="space-y-6 text-film-ash font-display text-xl leading-relaxed">
-                <p>
-                  <span className="text-film-gold italic text-2xl">С</span>ледователь Кравцов приезжает в заснеженный приморский город,
-                  чтобы раскрыть самоубийство известного профессора. Но чем глубже он копает,
-                  тем яснее становится: здесь никто не тот, кем кажется.
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 1, background: `${G}18` }}>
+            {ACTORS.map((actor, i) => (
+              <RevealSection key={i} delay={i * 90}>
+                <ActorCard actor={actor} index={i} G={G} BG="#110D09" CREAM={CREAM} ASH={ASH} DARK_ASH={DARK_ASH} />
+              </RevealSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ СЮЖЕТ ══ */}
+      <section className="relative py-32 overflow-hidden">
+        <ParallaxBg src={IMAGES.saloon} opacity={0.25} />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${BG}F2 40%, ${BG}B0 100%)` }} />
+        <div className="relative z-10 container" style={{ maxWidth: 1152, margin: "0 auto", padding: "0 1.5rem" }}>
+          <RevealSection>
+            <div style={{ maxWidth: 680 }}>
+              <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.5em", color: G, textTransform: "uppercase", marginBottom: "1.2rem" }}>О фильме</p>
+              <h2 style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(1.8rem,4vw,3rem)", fontWeight: 300, letterSpacing: "0.15em", color: CREAM, lineHeight: 1.2, marginBottom: "2.5rem" }}>
+                КИНО КАК<br /><span style={{ color: G }}>СПАСЕНИЕ МИРА</span>
+              </h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+                <p style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.2rem", lineHeight: 1.8, color: ASH, fontStyle: "italic" }}>
+                  <span style={{ color: G, fontSize: "1.6rem" }}>М</span>истер Фёст — просветлённый энтузиаст кино — приезжает в дикий западный городок с одной миссией: показать людям фильмы и сделать их лучше.
                 </p>
-                <p>
-                  За фасадами респектабельных домов скрываются десятилетия тайн, предательств
-                  и преступлений, которые давно считались забытыми. И кто-то очень хочет,
-                  чтобы они такими и оставались.
+                <p style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.2rem", lineHeight: 1.8, color: ASH }}>
+                  Бандиты, стрельба, любовь и волшебный свет проектора — кинематограф побеждает насилие силой красоты. Советский музыкальный вестерн, ставший культовым.
                 </p>
               </div>
-
-              <div className="mt-10 flex flex-wrap gap-4">
-                {["Триллер", "Психологическая драма", "16+", "138 минут"].map((tag, i) => (
-                  <span key={i} className="font-heading text-[10px] tracking-[0.3em] uppercase border border-film-gold/30 text-film-gold px-4 py-2">
-                    {tag}
-                  </span>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", marginTop: "2rem" }}>
+                {["Музыкальный вестерн", "Комедия", "1987", "100 минут"].map((tag, i) => (
+                  <span key={i} style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", border: `1px solid ${G}50`, color: G, padding: "0.4rem 1rem" }}>{tag}</span>
                 ))}
               </div>
             </div>
@@ -281,95 +267,44 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ═══════════ АКТЁРЫ ═══════════ */}
-      <section className="relative py-32">
-        <div className="container max-w-6xl mx-auto px-6">
+      {/* ══ КОМПОЗИТОР + ПЕСНИ ══ */}
+      <section className="relative py-28 overflow-hidden">
+        <ParallaxBg src={IMAGES.projector} opacity={0.18} />
+        <div className="absolute inset-0" style={{ background: `${BG}D0` }} />
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${G}66, transparent)` }} />
+        <div className="relative z-10 container" style={{ maxWidth: 1152, margin: "0 auto", padding: "0 1.5rem" }}>
           <RevealSection>
-            <div className="text-center mb-20">
-              <div className="font-heading text-[10px] tracking-[0.5em] text-film-gold uppercase mb-4">В главных ролях</div>
-              <h2 className="font-heading text-[clamp(2rem,4vw,3rem)] font-light tracking-wider text-film-cream">
-                АКТЁРСКИЙ СОСТАВ
+            <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+              <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.5em", color: G, textTransform: "uppercase", marginBottom: "1rem" }}>Музыка к фильму</p>
+              <h2 style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(1.8rem,4vw,3rem)", fontWeight: 300, letterSpacing: "0.2em", color: CREAM }}>
+                ГЕННАДИЙ ГЛАДКОВ
               </h2>
-              <div className="w-24 h-[1px] bg-film-gold/40 mx-auto mt-6" />
+              <p style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontSize: "1.1rem", color: ASH, marginTop: "0.6rem" }}>Композитор · автор музыки</p>
+              <div style={{ width: 80, height: 1, background: `${G}66`, margin: "1.2rem auto 0" }} />
+              <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 11, letterSpacing: "0.35em", color: DARK_ASH, textTransform: "uppercase", marginTop: "0.8rem" }}>
+                Слова песен — Юрий Ряшенцев
+              </p>
             </div>
           </RevealSection>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1">
-            {ACTORS.map((actor, i) => (
-              <RevealSection key={i} delay={i * 120}>
-                <div className="group relative overflow-hidden aspect-[3/4] bg-film-charcoal cursor-pointer">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                    style={{
-                      backgroundImage: `url(${IMAGES.cast})`,
-                      backgroundPosition: `${(i % 2) * 50}% ${Math.floor(i / 2) * 50}%`,
-                      filter: "grayscale(60%) contrast(1.1)",
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-film-dark via-film-dark/20 to-transparent" />
-                  <div className="absolute inset-0 bg-film-gold/0 group-hover:bg-film-gold/10 transition-colors duration-500" />
-
-                  <div className="absolute top-0 left-0 right-0 h-[1px] bg-film-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left" />
-
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <div className="font-heading text-[9px] tracking-[0.4em] text-film-gold uppercase mb-2">{actor.award}</div>
-                    <h3 className="font-heading text-xl font-light tracking-wider text-film-cream leading-tight">{actor.name}</h3>
-                    <p className="font-display italic text-film-ash text-sm mt-1">{actor.role}</p>
-                  </div>
-                </div>
-              </RevealSection>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════ КЛЮЧЕВЫЕ СЦЕНЫ ═══════════ */}
-      <section className="relative py-32 bg-film-charcoal">
-        <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: "linear-gradient(90deg, transparent, #C9A84C60, transparent)" }} />
-        <div className="container max-w-6xl mx-auto px-6">
-          <RevealSection>
-            <div className="text-center mb-20">
-              <div className="font-heading text-[10px] tracking-[0.5em] text-film-gold uppercase mb-4">Из фильма</div>
-              <h2 className="font-heading text-[clamp(2rem,4vw,3rem)] font-light tracking-wider text-film-cream">
-                КЛЮЧЕВЫЕ СЦЕНЫ
-              </h2>
-              <div className="w-24 h-[1px] bg-film-gold/40 mx-auto mt-6" />
-            </div>
-          </RevealSection>
-
-          <div className="space-y-2">
-            {SCENES.map((scene, i) => (
-              <RevealSection key={i} delay={i * 150}>
-                <div className="group relative overflow-hidden" style={{ aspectRatio: "16/6" }}>
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
-                    style={{
-                      backgroundImage: `url(${i === 0 ? IMAGES.hero : i === 1 ? IMAGES.scene : IMAGES.director})`,
-                      filter: "grayscale(40%) brightness(0.6)",
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-film-dark/80 via-transparent to-film-dark/40" />
-
-                  <div className="absolute top-0 left-0 right-0 h-[8%] bg-film-dark" />
-                  <div className="absolute bottom-0 left-0 right-0 h-[8%] bg-film-dark" />
-
-                  <div className="absolute inset-[8%] flex items-center">
-                    <div className="flex items-center gap-8">
-                      <div className="font-heading text-[clamp(3rem,6vw,5rem)] font-light text-film-gold/20 tabular-nums">
-                        {String(i + 1).padStart(2, "0")}
-                      </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.5rem" }}>
+            {SONGS.map((song, i) => (
+              <RevealSection key={i} delay={i * 140}>
+                <div style={{ position: "relative", overflow: "hidden", padding: "2rem", border: `1px solid ${G}33`, background: `${G}08` }}>
+                  <div style={{ position: "absolute", top: "-0.5rem", right: "1rem", fontFamily: "Oswald, sans-serif", fontSize: "6rem", fontWeight: 700, color: `${G}0A`, lineHeight: 1, userSelect: "none" }}>{i + 1}</div>
+                  <div className="relative z-10">
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+                      <Icon name={song.icon as "Film" | "Sparkles" | "Music"} size={18} style={{ color: G }} />
                       <div>
-                        <h3 className="font-heading text-[clamp(1.2rem,3vw,2rem)] font-light tracking-[0.2em] text-film-cream uppercase">{scene.title}</h3>
-                        <p className="font-display italic text-film-ash text-sm mt-1">{scene.desc}</p>
+                        <h3 style={{ fontFamily: "Oswald, sans-serif", fontSize: "1.2rem", letterSpacing: "0.2em", color: CREAM, textTransform: "uppercase" }}>{song.title}</h3>
+                        <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 9, letterSpacing: "0.35em", color: DARK_ASH, textTransform: "uppercase" }}>{song.subtitle}</p>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="absolute right-8 inset-y-[8%] flex items-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                      <div className="w-12 h-12 rounded-full border border-film-gold/60 flex items-center justify-center">
-                        <Icon name="Play" size={16} className="text-film-gold ml-0.5" />
-                      </div>
+                    <div style={{ width: "100%", height: 1, background: `${G}33`, marginBottom: "1.2rem" }} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                      {song.lines.map((line, j) => (
+                        <p key={j} style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontSize: "1.05rem", color: j === 0 ? G : ASH, lineHeight: 1.6 }}>{line}</p>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -379,54 +314,75 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ═══════════ ФИНАЛ / CTA ═══════════ */}
-      <section className="relative py-40 overflow-hidden">
-        <div className="absolute inset-0">
-          <div
-            className="w-full h-full bg-cover bg-center animate-zoom-slow"
-            style={{
-              backgroundImage: `url(${IMAGES.scene})`,
-              filter: "grayscale(80%) brightness(0.3)",
-            }}
-          />
-          <div className="absolute inset-0 bg-film-dark/70" />
-        </div>
+      {/* ══ ФИНАЛ ══ */}
+      <section className="relative overflow-hidden" style={{ paddingTop: "10rem", paddingBottom: "10rem" }}>
+        <ParallaxBg src={IMAGES.hero} opacity={0.35} />
+        <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, ${BG}99, ${BG}DD)` }} />
+        <div className="absolute top-0 left-0 right-0" style={{ height: "10%", background: BG }} />
+        <div className="absolute bottom-0 left-0 right-0" style={{ height: "10%", background: BG }} />
+        <div style={{ position: "absolute", top: "10%", left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${G}, transparent)` }} />
+        <div style={{ position: "absolute", bottom: "10%", left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${G}, transparent)` }} />
 
-        <div className="relative z-10 text-center px-6">
+        <div className="relative z-10" style={{ textAlign: "center", padding: "0 1.5rem" }}>
           <RevealSection>
-            <div className="font-heading text-[10px] tracking-[0.5em] text-film-gold uppercase mb-6">Скоро в кино</div>
-            <h2 className="font-heading text-[clamp(2.5rem,8vw,7rem)] font-light tracking-[0.15em] text-film-cream leading-none mb-4">
-              14 НОЯБРЯ
+            <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.55em", color: G, textTransform: "uppercase", marginBottom: "1.5rem" }}>Советский кинематограф</p>
+            <h2 style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(2.5rem,8vw,6.5rem)", fontWeight: 200, letterSpacing: "0.12em", color: CREAM, lineHeight: 1, marginBottom: "1rem" }}>
+              СМОТРЕТЬ ФИЛЬМ
             </h2>
-            <div className="font-display italic text-film-ash text-xl mb-12">Некоторые тайны лучше не раскрывать</div>
-
-            <button className="font-heading text-[11px] tracking-[0.5em] uppercase text-film-dark bg-film-gold px-12 py-4 hover:bg-film-cream transition-colors duration-300 cursor-pointer">
-              Купить билет
-            </button>
-
-            <div className="mt-16 flex justify-center gap-12 flex-wrap">
-              {["12+", "Русские субтитры", "IMAX доступен"].map((info, i) => (
-                <div key={i} className="font-heading text-[9px] tracking-[0.4em] text-film-ash uppercase">{info}</div>
-              ))}
+            <p style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontSize: "1.2rem", color: ASH, marginBottom: "3rem" }}>
+              «Если бы кино сделало людей лучше — это было бы чудо. Но оно делает мир красивее.»
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", justifyContent: "center" }}>
+              <button
+                style={{ fontFamily: "Oswald, sans-serif", fontSize: 11, letterSpacing: "0.45em", textTransform: "uppercase", background: G, color: BG, padding: "1rem 3rem", cursor: "pointer", border: "none", transition: "background 0.3s" }}
+                onMouseEnter={e => (e.currentTarget.style.background = CREAM)}
+                onMouseLeave={e => (e.currentTarget.style.background = G)}
+              >
+                Смотреть онлайн
+              </button>
+              <button
+                style={{ fontFamily: "Oswald, sans-serif", fontSize: 11, letterSpacing: "0.45em", textTransform: "uppercase", background: "transparent", color: G, padding: "1rem 3rem", cursor: "pointer", border: `1px solid ${G}80`, transition: "border-color 0.3s" }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = G)}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = `${G}80`)}
+              >
+                КиноПоиск
+              </button>
             </div>
           </RevealSection>
         </div>
       </section>
 
-      {/* ═══════════ FOOTER ═══════════ */}
-      <footer className="border-t border-film-gold/10 py-12">
-        <div className="container max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="font-heading text-xs tracking-[0.4em] text-film-ash uppercase">
-            © 2024 Киностудия «Меридиан» · Все права защищены
-          </div>
-          <div className="font-heading text-[10px] tracking-[0.3em] text-film-gold uppercase">
-            ТЕНИ ПРОШЛОГО
-          </div>
-          <div className="font-heading text-xs tracking-[0.3em] text-film-ash uppercase">
-            Возрастное ограничение: 16+
-          </div>
+      {/* ══ FOOTER ══ */}
+      <footer style={{ borderTop: `1px solid ${G}20`, padding: "2.5rem 0" }}>
+        <div className="container" style={{ maxWidth: 1152, margin: "0 auto", padding: "0 1.5rem", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+          <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.35em", color: DARK_ASH, textTransform: "uppercase" }}>© 1987 Мосфильм · Все права защищены</p>
+          <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 11, letterSpacing: "0.4em", color: G, textTransform: "uppercase" }}>ЧЕЛОВЕК С БУЛЬВАРА КАПУЦИНОВ</p>
+          <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.35em", color: DARK_ASH, textTransform: "uppercase" }}>Режиссёр: Алла Сурикова</p>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function ActorCard({ actor, index, G, BG, CREAM, ASH, DARK_ASH }: {
+  actor: { name: string; role: string; note: string };
+  index: number;
+  G: string; BG: string; CREAM: string; ASH: string; DARK_ASH: string;
+}) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ position: "relative", overflow: "hidden", padding: "2rem", background: hovered ? "#1A1208" : BG, transition: "background 0.4s ease", cursor: "pointer" }}
+    >
+      <div style={{ fontFamily: "Oswald, sans-serif", fontSize: "3.5rem", fontWeight: 300, color: `${G}14`, lineHeight: 1, marginBottom: "0.5rem", userSelect: "none" }}>
+        {String(index + 1).padStart(2, "0")}
+      </div>
+      <h3 style={{ fontFamily: "Oswald, sans-serif", fontSize: "1.2rem", fontWeight: 400, letterSpacing: "0.15em", color: CREAM, textTransform: "uppercase", lineHeight: 1.2 }}>{actor.name}</h3>
+      <p style={{ fontFamily: "Cormorant Garamond, serif", fontStyle: "italic", fontSize: "1rem", color: G, marginTop: "0.4rem" }}>{actor.role}</p>
+      <p style={{ fontFamily: "Oswald, sans-serif", fontSize: 10, letterSpacing: "0.3em", color: DARK_ASH, textTransform: "uppercase", marginTop: "0.6rem" }}>{actor.note}</p>
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: G, transform: hovered ? "scaleX(1)" : "scaleX(0)", transformOrigin: "left", transition: "transform 0.5s ease" }} />
     </div>
   );
 }
